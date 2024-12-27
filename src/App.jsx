@@ -8,7 +8,7 @@ function App() {
     <Frame>
       <Canvas
         camera={{
-          position: [10, 10, 10],
+          position: [0, 500, 0],
         }}
       >
         <Environments />

@@ -35,7 +35,7 @@ export default [
       ],
       "react/no-unknown-property": [
         "error",
-        { ignore: ["intensity", "object"] },
+        { ignore: ["intensity", "object", "position", "rotation", "args"] },
       ],
     },
   },
