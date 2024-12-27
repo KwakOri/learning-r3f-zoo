@@ -12,7 +12,7 @@ const Dino = ({ name, ...props }) => {
   const { actions } = useAnimations(animations, group);
 
   useEffect(() => {
-    console.log(actions);
+    actions[`Armature|${name}_Idle`].reset().play();
   });
 
   return (
