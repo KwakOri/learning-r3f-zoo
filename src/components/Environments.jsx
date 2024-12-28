@@ -2,14 +2,21 @@
 import { OrbitControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
-import { Suspense } from "react";
-import Animal from "./Animal";
-import Dino from "./Dino";
+import { Fragment, Suspense } from "react";
+import { useZoo } from "../contexts/context";
+import Figure from "./Figures/Figure";
 import ZooMap from "./ZooMap";
 
-const START_Y = 20;
+const Environments = () => {
+  const {
+    isEditMode,
+    objects,
+    setDraggedPosition,
+    draggedPosition,
+    selectedId,
+    setObjects,
+  } = useZoo();
 
-const Environments = ({ isEditMode }) => {
   const { camera } = useThree();
   useFrame(() => {
     if (!isEditMode) return;
@@ -17,12 +24,30 @@ const Environments = ({ isEditMode }) => {
     camera.position.y = 500;
     camera.position.z = 0;
   });
+  console.log(objects.find((obj) => obj.id === selectedId)?.position);
+
+  const onPointerMove = (e) => {
+    // setDraggedPosition(e.point);
+    // console.log(e.point.x);
+    // console.log(selectedId);
+    if (selectedId) {
+      setObjects((prev) => {
+        return prev.map((obj) => {
+          if (obj.id !== selectedId) return obj;
+          const newObj = structuredClone(obj);
+          newObj.position[0] = e.point.x;
+          newObj.position[2] = e.point.z;
+          return newObj;
+        });
+      });
+    }
+  };
 
   return (
     <>
       {isEditMode && (
         <>
-          <gridHelper args={[1000, 100]} />
+          <gridHelper onPointerMove={onPointerMove} args={[1000, 100]} />
           <gridHelper rotation={[Math.PI / 2, 0, 0]} args={[1000, 100]} />
         </>
       )}
@@ -34,18 +59,13 @@ const Environments = ({ isEditMode }) => {
           <RigidBody type={"fixed"} colliders={"trimesh"}>
             <ZooMap />
           </RigidBody>
-          <RigidBody
-            enabledRotations={[false, false, false]}
-            colliders={"hull"}
-          >
-            <Animal position={[10, START_Y, 0]} name={"Alpaca"} />
-          </RigidBody>
-          <RigidBody
-            enabledRotations={[false, false, false]}
-            colliders={"hull"}
-          >
-            <Dino position={[-10, START_Y, 0]} name={"TRex"} />
-          </RigidBody>
+          {objects.map(({ id, ...object }) => {
+            return (
+              <Fragment key={id}>
+                <Figure id={id} {...object} />
+              </Fragment>
+            );
+          })}
         </Physics>
       </Suspense>
     </>

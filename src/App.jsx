@@ -1,12 +1,12 @@
 import { Canvas } from "@react-three/fiber";
-import { useState } from "react";
 import "./App.css";
 import Environments from "./components/Environments";
 import Frame from "./components/Frame";
 import { EditIcon } from "./components/icons/EditIcon";
+import { useZoo } from "./contexts/context";
 
 function App() {
-  const [isEditMode, setIsEditMode] = useState(false);
+  const { setIsEditMode } = useZoo();
   return (
     <Frame>
       <Canvas
@@ -14,7 +14,7 @@ function App() {
           position: [0, 500, 0],
         }}
       >
-        <Environments isEditMode={isEditMode} />
+        <Environments />
       </Canvas>
       <div className={"overlay"}>
         <EditIcon onClick={() => setIsEditMode((prev) => !prev)} />
